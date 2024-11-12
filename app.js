@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const serverConfig = require("./configs/server.js");
 const cookieParser = require("cookie-parser");
 const userRouter = require("./routes/users-routes");
+const petRouter = require('./routes/pets-routes');
 const HttpError = require("./models/http-error");
 
 const app = express();
@@ -13,6 +14,7 @@ app.use(cookieParser(serverConfig.cookieSecret));
 
 // Users routes
 app.use("/api/users", userRouter);
+app.use("/api/pets", petRouter);
 
 // Middleware for non-existent routes
 app.use((req, res, next) => {
