@@ -48,7 +48,13 @@ const signOut = async (req, res, next) => {
 
 const getUserInformation = async (req, res) => {
     const { email } = res.locals;
-    const user = await User.findOne({email});
+    let user;
+    try {
+        user = await User.findOne({email});
+    } catch (err) {
+        const error = new HttpError(`Internal Server Error - ${err}`, 500);
+        return next(error);
+    }
 
     if (!user) {
         const error = new HttpError(`No user found`, 404);
@@ -138,13 +144,18 @@ const updatePassword = async (req, res, next) => {
 
     const { password } = req.body;
     const { email } = res.locals;
-
-    const user = await User.findOne({email});
+    let user;
+    try {
+        user = await User.findOne({email});
+    } catch (err) {
+        const error = new HttpError(`Internal Server Error - ${err}`, 500);
+        return next(error);
+    }
 
     if (!user) {
         const error = new HttpError(`No user with email ${email}`, 500);
         return next(error);
-    }
+    } 
 
     user.password = password;
     await user.save();

@@ -26,7 +26,6 @@ userRouter.post(
             .isEmail()
             .withMessage("Valid email is required"),
     ],
-    validateRequest,
     usersControllers.signUp
 );
 
@@ -48,7 +47,6 @@ userRouter.put(
         check("lastName").optional().trim(),
         check("phoneNumber").optional().trim().isMobilePhone().withMessage("Invalid phone number format, please try again."),
     ],
-    validateRequest,
     usersControllers.updateUser
 );
 
@@ -63,7 +61,6 @@ userRouter.put(
         .isStrongPassword({ minLength: 8, minLowercase: 1, minNumbers: 1, minSymbols: 1 })
         .withMessage("Password must be at least 8 characters long, contain at least one lowercase letter, one number, and one symbol")
     ],
-    validateRequest,
     usersControllers.updatePassword
 );
 
