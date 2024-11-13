@@ -6,6 +6,8 @@ const {isAuthenticated} = require('../controllers/validate-auth.js');
 
 const userRouter = express.Router();
 
+
+userRouter.get('/signout', isAuthenticated, usersControllers.signOut);
 userRouter.get("/", usersControllers.getUsers);
 
 userRouter.post(
@@ -40,6 +42,7 @@ userRouter.post(
 
 userRouter.put(
     "/:uid",
+    isAuthenticated,
     [
         check("firstName").optional().trim(),
         check("lastName").optional().trim(),
@@ -53,6 +56,7 @@ userRouter.get('/:uid', isAuthenticated, usersControllers.getUserInformation);
 
 userRouter.put(
     "/reset-password/:uid",
+    isAuthenticated,
     [
         check("password")
         .notEmpty()
@@ -62,7 +66,5 @@ userRouter.put(
     validateRequest,
     usersControllers.updatePassword
 );
-
-userRouter.get('/signout', isAuthenticated, usersControllers.signOut);
 
 module.exports = userRouter;

@@ -3,14 +3,10 @@ const jwt = require('jsonwebtoken');
 const HttpError = require('../models/http-error');
 const User = require('../models/user');
 const cookieOpts = require('../utils/constrains.js');
-const { validationResult } = require('express-validator');
 const serverConfig = require("../configs/server.js");
 
 const login = async (req, res, next) => {
-    const errors = validationResult(req);
-    if(!errors.isEmpty()){
-        return next(new HttpError("Invalid input, please check data!", 422));
-    }
+
     const { email, password } = req.body;
 
     let existingUser;
@@ -30,7 +26,16 @@ const login = async (req, res, next) => {
             expiresIn: '30d',
         });
 
-        res.status(200).cookie('token', token, cookieOpts).json(existingUser);
+        const userObj = {
+            email: existingUser.email,
+            firstName: existingUser.firstName,
+            lastName: existingUser.lastName,
+            id: existingUser._id,
+            phoneNumber: existingUser.phoneNumber,
+            role: existingUser.role
+        };
+
+        res.status(200).cookie('token', token, cookieOpts).json(userObj);
     } catch (err) {
         return next(new HttpError("Login failed. Please try again.", 500));
     }
@@ -42,8 +47,8 @@ const signOut = async (req, res, next) => {
 };
 
 const getUserInformation = async (req, res) => {
-    const userId = req.params.uid;
-    const user = await User.findById(userId);
+    const { email } = res.locals;
+    const user = await User.findOne({email});
 
     if (!user) {
         const error = new HttpError(`No user found`, 404);
@@ -52,6 +57,7 @@ const getUserInformation = async (req, res) => {
 
     const userObj = {
         email: user.email,
+        id: user._id,
         firstName: user.firstName,
         lastName: user.lastName,
         phoneNumber: user.phoneNumber,
@@ -62,23 +68,19 @@ const getUserInformation = async (req, res) => {
 };
 
 const updateUser = async (req, res, next) => {
-    const errors = validationResult(req);
-    if(!errors.isEmpty()){
-        return next(new HttpError("Invalid input, please check data!", 422));
-    }
 
-    const userId = req.params.uid;
+    const { email } = res.locals;
     const { firstName, lastName, phoneNumber } = req.body;
 
     let user;
     try {
-        user = await User.findById(userId);
+        user = await User.findOne({email});
     }catch(err){
         const error = new HttpError('Something went wrong, could not update the user.', 500);
         return next(error);
     }
     if(!user) {
-        const error = new HttpError('Could not find the user for the provided user id.', 404);
+        const error = new HttpError('Could not find the user.', 404);
         return next(error);
     }
     if (firstName) {
@@ -102,10 +104,7 @@ const updateUser = async (req, res, next) => {
 };
 
 const signUp = async (req, res, next) => {
-    const errors = validationResult(req);
-    if(!errors.isEmpty()){
-        return next(new HttpError("Invalid input, please check data!", 422));
-    }
+
     const {
         email,
         password,
@@ -113,10 +112,9 @@ const signUp = async (req, res, next) => {
         lastName,
         phoneNumber
     } = req.body;
-    const userId = req.params.uid;
 
     try {
-        const existingUser = await User.findById(userId);
+        const existingUser = await User.findOne({email});
 
         if (existingUser) {
             const error = new HttpError('Email already in use', 409);
@@ -133,25 +131,22 @@ const signUp = async (req, res, next) => {
         const error = new HttpError(`Internal Server Error - ${err}`, 500);
         return next(error);
     }
-    return res.status(201).json({});
+    return res.status(201).json({"message": "Successfully signUp!"});
 };
 
 const updatePassword = async (req, res, next) => {
-    const errors = validationResult(req);
-    if(!errors.isEmpty()){
-        return next(new HttpError("Invalid input, please check data!", 422));
-    }
-    const { newPassword } = req.body;
-    const userId = req.params.uid;
 
-    const user = await User.findById(userId);
+    const { password } = req.body;
+    const { email } = res.locals;
+
+    const user = await User.findOne({email});
 
     if (!user) {
         const error = new HttpError(`No user with email ${email}`, 500);
         return next(error);
     }
 
-    user.password = newPassword;
+    user.password = password;
     await user.save();
 
     return res.status(200).json({ message: 'Password updated successfully' });
