@@ -20,7 +20,7 @@ const userSchema = new Schema(
       unique: true,
       trim: true,
       lowercase: true,
-      match: [/.+@.+\..+/, "Please fill a valid email address"],
+      match: [/.+@.+\..+/, "Please input a valid email address"],
     },
     role: {
       type: String,
