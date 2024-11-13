@@ -19,7 +19,7 @@ userRouter.post(
             .notEmpty()
             .isStrongPassword({ minLength: 8, minLowercase: 1, minNumbers: 1, minSymbols: 1 })
             .withMessage("Password must be at least 8 characters long, contain at least one lowercase letter, one number, and one symbol"),
-        check("phoneNumber").optional().trim().isMobilePhone().withMessage("Invalid phone number format"),
+        check("phoneNumber").optional().trim().isMobilePhone().withMessage("Invalid phone number format, please try again"),
         check("email")
             .trim()
             .notEmpty()
@@ -46,7 +46,7 @@ userRouter.put(
     [
         check("firstName").optional().trim(),
         check("lastName").optional().trim(),
-        check("phoneNumber").optional().trim().isMobilePhone().withMessage("Invalid phone number format"),
+        check("phoneNumber").optional().trim().isMobilePhone().withMessage("Invalid phone number format, please try again."),
     ],
     validateRequest,
     usersControllers.updateUser
