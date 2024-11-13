@@ -58,6 +58,7 @@ npm run start
     - **Response**: Returns the newly created pet object.
 
 ### User API
+
 1. User Sign Up
     - **Endpoint**: `POST` `/users/signup`
     - **Description**: Registers a new user.
@@ -68,7 +69,7 @@ npm run start
             "lastName": "Doe",
             "email": "johndoe@example.com",
             "password": "P@ssw0rd!",
-            "phoneNumber": "123-456-7890"
+            "phoneNumber": "1234567890"
         }
         ```
 
@@ -87,24 +88,24 @@ npm run start
     - **Response**: Returns a token if login is successful.
 
 3. User Logout
-    - **Endpoint**: GET /users/signout
+    - **Endpoint**: `GET` `/users/signout`
     - **Description**: Logs out the currently authenticated user.
     - **Authentication**: Required.
 
 4. Get All Users
-    - **Endpoint**: GET /users
+    - **Endpoint**: `GET` `/users`
     - **Description**: Retrieves a list of all registered users.
     - **Authentication**: None required.
 
 5. Get User Information
-    - **Endpoint**: GET /users/:uid
+    - **Endpoint**: `GET` `/users/:uid`
     - **Description**: Fetches details of a specific user by their unique ID.
     - **Authentication**: Required.
     - **Parameters**:
         - `uid`: The unique ID of the user.
 
 6. Update User Information
-    - **Endpoint**: PUT /users/:uid
+    - **Endpoint**: `PUT` `/users/:uid`
     - **Description**: Updates user profile information.
     - **Authentication**: Required.
     - **Request Body**:
@@ -112,14 +113,14 @@ npm run start
         {
             "firstName": "John",
             "lastName": "Doe",
-            "phoneNumber": "123-456-7890"
+            "phoneNumber": "1234567890"
         }
         ```
 
     - **Response**: Returns the updated user details.
 
 7. Reset User Password
-    - **Endpoint**: PUT /users/reset-password/:uid
+    - **Endpoint**: `PUT` `/users/reset-password/:uid`
     - **Description**: Resets a user’s password.
     - **Authentication**: Required.
     - **Request Body**:
