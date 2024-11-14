@@ -34,7 +34,6 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(
     `mongodb+srv://${serverConfig.mongo_login}:${serverConfig.mongo_password}@petclaster.dxpqd.mongodb.net/?retryWrites=true&w=majority&appName=petClaster`,
-    { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => {
     app.listen(8080, () => console.log("Server running on port 8080"));
