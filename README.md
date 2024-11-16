@@ -57,6 +57,32 @@ npm run start
         ```
     - **Response**: Returns the newly created pet object.
 
+4. Update a Pet
+    - **Endpoint**: `PUT` `/pets/update/:id`
+    - **Description**: Updates details of a specific pet in the database.
+    - **Authentication**: Admin required.
+    - **Request Body**:
+        ```json
+        {
+            "name": "Bella",
+            "description": "An energetic and friendly dog.",
+            "breed": "Golden Retriever",
+            "adoptionStatus": "Adopted",
+            "age": 4,
+            "photoURL": "http://example.com/photo2.jpg"
+        }
+        ```
+    - **Response**: Returns the updated pet object.
+
+5. Delete a Pet
+    - **Endpoint**: `DELETE` `/pets/delete/:id`
+    - **Description**: Deletes a pet from the database by its ID.
+    - **Authentication**: Admin required.
+    - **Parameters**: `id`: The unique ID of the pet.
+    - **Response**: Returns a success message upon deletion.
+
+
+
 ### User API
 1. User Sign Up
     - **Endpoint**: `POST` `/users/signup`

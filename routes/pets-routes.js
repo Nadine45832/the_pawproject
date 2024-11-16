@@ -4,12 +4,13 @@ const User = require('../models/user');
 const router = express.Router();
 const HttpError = require('../models/http-error');
 const { check } = require("express-validator");
+const petsControllers = require("../controllers/pets-controllers.js");
 const {isAuthenticated} = require('../controllers/validate-auth.js');
 
 router.get('/', async (req, res, next) => {
     try {
         const pets = await Pet.find();
-        res.status(200).json(pets);
+        res.status(200).json({pets: pets.map(p => p.toObject())});
       } catch (err) {
         next(new HttpError('Fetching pets failed, please try again later.', 500));
       }
@@ -18,59 +19,46 @@ router.get('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
     try {
         const pet = await Pet.findById(req.params.id);
-        if (!pet) throw new HttpError('Pet not found', 404);
+        if (!pet){return next(new HttpError('Pet not found', 404))};
         res.status(200).json(pet);
       } catch (err) {
-        next(err);
+        next(new HttpError('Fetching pet failed, please try again later.', 500));
       }
 });
+
 
 router.post(
   '/add',
   isAuthenticated,
   [
     check("name").notEmpty().withMessage("Name is required").trim(),
-    check("description").notEmpty().withMessage("Description is required").trim(),
+    check("description").notEmpty().withMessage("Description is required").isLength({ max: 600 }).withMessage("Description must not exceed 600 characters").trim(),
     check("breed").notEmpty().withMessage("Breed is required").trim(),
-    check("adoptionStatus").notEmpty().withMessage("Adoption status is required").trim(),
-    check("age").notEmpty().withMessage("Age is required"),
-    check("photoURL").notEmpty().withMessage("Photo URL is required").trim(),
+    check("adoptionStatus").notEmpty().isIn(['Available', 'Adopted', 'Pending']).withMessage('Adoption status must be one of: Available, Adopted, Pending').trim(),
+    check("age").notEmpty().isNumeric().withMessage('Age must be a number'),
+    check("photoURL").notEmpty().isURL().withMessage('Photo URL must be a valid URL').trim(),
+  ], petsControllers.addPet
+);
+
+router.delete(
+  '/delete/:id',
+  isAuthenticated, petsControllers.deletePet
+);
+
+
+router.put(
+  '/update/:id',
+  isAuthenticated,
+  [
+    check("name").optional().trim(),
+    check("description").optional().isLength({ max: 600 }).withMessage("Description must not exceed 600 characters").trim(),
+    check("breed").optional().trim(),
+    check("adoptionStatus").optional().isIn(['Available', 'Adopted', 'Pending']).withMessage('Adoption status must be one of: Available, Adopted, Pending'),
+    check("age").optional().isNumeric().withMessage('Age must be a number'),
+    check("photoURL").optional().trim().isURL().withMessage('Photo URL must be a valid URL'),
   ],
-  async (req, res, next) => {
-    const { email } = res.locals;
-    let user;
-    try {
-        user = await User.findOne({email});
-    } catch (err) {
-        const error = new HttpError(`Internal Server Error - ${err}`, 500);
-        return next(error);
-    }
+  petsControllers.updatePet
+);
 
-    if (!user) {
-      const error = new HttpError(`No user found`, 404);
-      return next(error);
-    }
-    if (user.role !== 'admin') {
-      const error = new HttpError(`Forbidden. You have not permission!`, 403);
-      return next(error);
-    }
-    const { name, description, breed, adoptionStatus, age, photoURL } = req.body;
-    try {
-        const perObj = {
-          name,
-          description,
-          breed,
-          adoptionStatus,
-          age,
-          photoURL
-        }
-
-        await Pet.create(perObj);
-      res.status(200).json(perObj);
-    } catch (err) {
-      const error = new HttpError(`Internal Server Error - ${err}`, 500);
-      return next(error);
-    }
-});
 
 module.exports = router;
