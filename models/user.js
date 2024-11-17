@@ -36,7 +36,7 @@ const userSchema = new Schema(
     //hide sensitive fields like password
     transform: function (doc, ret) {
       delete ret.password;
-      retrun ret;
+      return ret;
   },
 },
 toObject: {

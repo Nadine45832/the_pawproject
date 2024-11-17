@@ -1,26 +1,15 @@
 const HttpError = require('../models/http-error');
 const Pet = require('../models/pets');
 const User = require('../models/user');
+const isAdmin = require('../utils/utils');
 
 
 
 const addPet = async (req, res, next) => {
     const { email } = res.locals;
-    let user;
-    try {
-        user = await User.findOne({email});
-    } catch (err) {
-        const error = new HttpError(`Internal Server Error - ${err}`, 500);
+    const { status, error } = await isAdmin(email);
+    if (!status) {
         return next(error);
-    }
-
-    if (!user) {
-      const error = new HttpError(`No user found`, 404);
-      return next(error);
-    }
-    if (user.role !== 'admin') {
-      const error = new HttpError(`Forbidden. You have not permission!`, 403);
-      return next(error);
     }
     const { name, description, breed, adoptionStatus, age, photoURL } = req.body;
     try {
@@ -44,21 +33,9 @@ const addPet = async (req, res, next) => {
 
 const deletePet = async (req, res, next) => {
     const { email } = res.locals;
-    let user;
-    try {
-        user = await User.findOne({email});
-    } catch (err) {
-        const error = new HttpError(`Internal Server Error - ${err}`, 500);
+    const { status, error } = await isAdmin(email);
+    if (!status) {
         return next(error);
-    }
-
-    if (!user) {
-      const error = new HttpError(`No user found`, 404);
-      return next(error);
-    }
-    if (user.role !== 'admin') {
-      const error = new HttpError(`Forbidden. You have not permission!`, 403);
-      return next(error);
     }
     try {
         await Pet.deleteOne({_id: req.params.id});
@@ -72,22 +49,9 @@ const deletePet = async (req, res, next) => {
 const updatePet = async (req, res, next) => {
     const { email } = res.locals;
     const { name, description, breed, adoptionStatus, age, photoURL } = req.body;
-    let user;
-
-    try {
-        user = await User.findOne({email});
-    } catch (err) {
-        const error = new HttpError(`Internal Server Error - ${err}`, 500);
+    const { status, error } = await isAdmin(email);
+    if (!status) {
         return next(error);
-    }
-
-    if (!user) {
-      const error = new HttpError(`No user found`, 404);
-      return next(error);
-    }
-    if (user.role !== 'admin') {
-      const error = new HttpError(`Forbidden. You have not permission!`, 403);
-      return next(error);
     }
 
     let pet;
