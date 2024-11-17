@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
 const SALT_ROUNDS = 10;
+const MIN_PASSWORD_LENGTH = 8;
+const EMAIL_REGEX = /.+@.+\..+/;
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema(
@@ -11,7 +13,7 @@ const userSchema = new Schema(
     password: {
       type: String,
       required: true,
-      minlength: [8, "Password must be at least 8 characters long"],
+      minlength: [MIN_PASSWORD_LENGTH, "Password must be at least 8 characters long"],
     },
     phoneNumber: { type: String, trim: true, default: null },
     email: {
@@ -20,7 +22,7 @@ const userSchema = new Schema(
       unique: true,
       trim: true,
       lowercase: true,
-      match: [/.+@.+\..+/, "Please input a valid email address"],
+      match: [EMAIL_REGEX, "Please input a valid email address"],
     },
     role: {
       type: String,
@@ -29,7 +31,22 @@ const userSchema = new Schema(
       immutable: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true,
+  toJSON: {
+    //hide sensitive fields like password
+    transform: function (doc, ret) {
+      delete ret.password;
+      retrun ret;
+  },
+},
+toObject: {
+  //Same behavior for objects
+  transform: function (doc,ret) {
+    delete ret.password;
+    return ret;
+    },
+   },
+  }   
 );
 
 // Pre-save hook to hash password if modified
@@ -41,7 +58,7 @@ userSchema.pre("save", async function (next) {
     this.password = await bcrypt.hash(this.password, salt);
     next();
   } catch (error) {
-    next(error);
+    next(new error ("Error hashing password"));
   }
 });
 
@@ -53,5 +70,8 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
     throw new Error("Password comparison failed");
   }
 };
+
+//Index the email field for efficient queries
+userSchema.index({ email: 1});
 
 module.exports = mongoose.model("User", userSchema);
