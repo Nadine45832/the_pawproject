@@ -6,11 +6,17 @@ const cookieParser = require("cookie-parser");
 const userRouter = require("./routes/users-routes");
 const petRouter = require('./routes/pets-routes');
 const HttpError = require("./models/http-error");
+var cors = require('cors')
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(cookieParser(serverConfig.cookieSecret));
+app.use(cors({
+    origin: 'http://127.0.0.1:3000',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+}));
 
 // Users routes
 app.use("/api/users", userRouter);

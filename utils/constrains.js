@@ -2,8 +2,9 @@ const ONE_MONTH_IN_MS = 2629800000;
 
 const cookieOpts = {
     httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV !== 'dev',
+    secure: false,
+    sameSite: 'Lax',
+    path: '/',
     maxAge: ONE_MONTH_IN_MS
 };
 
