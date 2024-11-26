@@ -174,6 +174,36 @@ const getUsers = async (req, res, next) => {
     res.status(200).json({users : users.map(u => u.toObject())});
 };
 
+
+const getCurrentUser = async (req, res, next) => {
+
+    const { email } = res.locals;
+    let user;
+    try {
+        user = await User.findOne({email});
+    } catch (err) {
+        const error = new HttpError(`Internal Server Error - ${err}`, 500);
+        return next(error);
+    }
+
+    if (!user) {
+        const error = new HttpError(`No user found`, 404);
+        return next(error);
+    }
+
+    const userObj = {
+        email: user.email,
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phoneNumber: user.phoneNumber,
+        role: user.role
+    };
+
+    return res.status(200).json(userObj);
+};
+
+
 module.exports = {
     login,
     signOut,
@@ -181,5 +211,6 @@ module.exports = {
     updateUser,
     signUp,
     updatePassword,
-    getUsers
+    getUsers,
+    getCurrentUser
 };

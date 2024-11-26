@@ -64,4 +64,10 @@ userRouter.put(
     usersControllers.updatePassword
 );
 
+userRouter.get(
+    "/get-current-user",
+    isAuthenticated,
+    usersControllers.getCurrentUser
+);
+
 module.exports = userRouter;
