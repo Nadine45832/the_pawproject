@@ -76,7 +76,7 @@ const getUserInformation = async (req, res) => {
 const updateUser = async (req, res, next) => {
 
     const { email } = res.locals;
-    const { firstName, lastName, phoneNumber } = req.body;
+    const { firstName, lastName, phoneNumber, password } = req.body;
 
     let user;
     try {
@@ -97,6 +97,10 @@ const updateUser = async (req, res, next) => {
     }
     if (phoneNumber) {
         user.phoneNumber = phoneNumber;
+    }
+
+    if (password) {
+        user.password = password;
     }
 
     try{

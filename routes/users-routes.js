@@ -7,7 +7,7 @@ const {isAuthenticated} = require('../controllers/validate-auth.js');
 const userRouter = express.Router();
 
 
-userRouter.get('/signout', isAuthenticated, usersControllers.signOut);
+userRouter.post('/signout', isAuthenticated, usersControllers.signOut);
 userRouter.get("/", usersControllers.getUsers);
 
 userRouter.post(
@@ -46,6 +46,10 @@ userRouter.put(
         check("firstName").optional().trim(),
         check("lastName").optional().trim(),
         check("phoneNumber").optional().trim().isMobilePhone().withMessage("Invalid phone number format, please try again."),
+        check("password")
+        .optional()
+        .isStrongPassword({ minLength: 8, minLowercase: 1, minNumbers: 1, minSymbols: 1 })
+        .withMessage("Password must be at least 8 characters long, contain at least one lowercase letter, one number, and one symbol")
     ],
     usersControllers.updateUser
 );
