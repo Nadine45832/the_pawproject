@@ -7,7 +7,6 @@ const {isAuthenticated} = require('../controllers/validate-auth.js');
 const userRouter = express.Router();
 
 
-userRouter.post('/signout', isAuthenticated, usersControllers.signOut);
 userRouter.get("/", usersControllers.getUsers);
 
 userRouter.post(

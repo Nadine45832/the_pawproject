@@ -11,12 +11,11 @@ const setLocals = (res, tokenData) => {
 };
 
 const handleAuthenticationError = (res, message = "Authentication failed") => {
-    res.clearCookie(authCookieName);
     return res.status(401).json({ error: message });
 };
 
 const isAuthenticated = (req, res, next) => {
-    const token = req.cookies[authCookieName];
+    const token = (req.headers.authorization || "").split(" ")[1]
 
     if (!token) {
         return handleAuthenticationError(res, "No authentication token provided");

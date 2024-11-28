@@ -35,15 +35,10 @@ const login = async (req, res, next) => {
             role: existingUser.role
         };
 
-        res.status(200).cookie('token', token, cookieOpts).json(userObj);
+        res.status(200).json({...userObj, token});
     } catch (err) {
         return next(new HttpError("Login failed. Please try again.", 500));
     }
-};
-
-const signOut = async (req, res, next) => {
-    res.clearCookie('token', cookieOpts);
-    return res.status(200).json({ message: 'Sign-out successful' });
 };
 
 const getUserInformation = async (req, res) => {
@@ -210,7 +205,6 @@ const getCurrentUser = async (req, res, next) => {
 
 module.exports = {
     login,
-    signOut,
     getUserInformation,
     updateUser,
     signUp,
