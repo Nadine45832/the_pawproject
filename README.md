@@ -102,18 +102,21 @@ npm run start
 
 2. User Login
     - **Endpoint**: `POST` `/users/login`
-    - **Description**: Logs in a user and generates an authentication token.
-    - **Request** Body:
+    - **Description**: Retrieves the authenticated user's details based on the token.
+    - **Response**:
         ```json
         {
             "email": "johndoe@example.com",
-            "password": "P@ssw0rd!"
+            "id": "user_id",
+            "firstName": "John",
+            "lastName": "Doe",
+            "phoneNumber": "123-456-7890",
+            "role": "admin"
         }
         ```
-    - **Response**: Returns a token if login is successful.
 
-3. User Logout
-    - **Endpoint**: GET /users/signout
+3. Get Current User
+    - **Endpoint**: GET /users/get-current-user
     - **Description**: Logs out the currently authenticated user.
     - **Authentication**: Required.
 
