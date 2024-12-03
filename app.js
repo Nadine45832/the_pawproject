@@ -6,9 +6,12 @@ const cookieParser = require("cookie-parser");
 const userRouter = require("./routes/users-routes");
 const petRouter = require('./routes/pets-routes');
 const HttpError = require("./models/http-error");
-var cors = require('cors')
+const cors = require('cors');
+const path = require('path');
 
 const app = express();
+
+app.use("/upload/images", express.static(path.join("upload", "images")));
 
 app.use(bodyParser.json());
 app.use(cookieParser(serverConfig.cookieSecret));

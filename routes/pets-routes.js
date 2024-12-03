@@ -6,6 +6,7 @@ const HttpError = require('../models/http-error');
 const { check } = require("express-validator");
 const petsControllers = require("../controllers/pets-controllers.js");
 const {isAuthenticated} = require('../controllers/validate-auth.js');
+const fileUpload = require("../middleware/file-upload");
 
 router.get('/', async (req, res, next) => {
     try {
@@ -36,7 +37,7 @@ router.post(
     check("breed").notEmpty().withMessage("Breed is required").trim(),
     check("adoptionStatus").notEmpty().isIn(['Available', 'Adopted', 'Pending']).withMessage('Adoption status must be one of: Available, Adopted, Pending').trim(),
     check("age").notEmpty().isNumeric().withMessage('Age must be a number'),
-    check("photoURL").notEmpty().isURL().withMessage('Photo URL must be a valid URL').trim(),
+    fileUpload.single("file"),
   ], petsControllers.addPet
 );
 
@@ -55,7 +56,7 @@ router.put(
     check("breed").optional().trim(),
     check("adoptionStatus").optional().isIn(['Available', 'Adopted', 'Pending']).withMessage('Adoption status must be one of: Available, Adopted, Pending'),
     check("age").optional().isNumeric().withMessage('Age must be a number'),
-    check("photoURL").optional().trim().isURL().withMessage('Photo URL must be a valid URL'),
+    fileUpload.single("file"),
   ],
   petsControllers.updatePet
 );
