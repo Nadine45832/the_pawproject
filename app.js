@@ -16,7 +16,7 @@ app.use("/upload/images", express.static(path.join("upload", "images")));
 app.use(bodyParser.json());
 app.use(cookieParser(serverConfig.cookieSecret));
 app.use(cors({
-    origin: 'http://127.0.0.1:3000',
+    origin: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
